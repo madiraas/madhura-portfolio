@@ -1,10 +1,9 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // Used from Server Components, Server Actions, and route handlers.
 // Reads/writes the auth cookie so the logged-in admin session is
-// visible on the server too (needed to see drafts/private rows,
-// which RLS only exposes to an authenticated request).
+// visible on the server too.
 export function createClient() {
   const cookieStore = cookies();
 
@@ -16,14 +15,21 @@ export function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+
+        setAll(
+          cookiesToSet: {
+            name: string;
+            value: string;
+            options?: CookieOptions;
+          }[]
+        ) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Called from a Server Component render - middleware
-            // already refreshes the session, so this is safe to ignore.
+            // Called from a Server Component render.
+            // Middleware already refreshes the session.
           }
         },
       },
