@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const LINKS = [
   { id: "about", label: "About" },
-  { id: "capabilities", label: "Help" },
+  { id: "capabilities", label: "What I do" },
   { id: "experience", label: "Experience" },
   { id: "freelance", label: "Freelance" },
   { id: "work", label: "Work" },
