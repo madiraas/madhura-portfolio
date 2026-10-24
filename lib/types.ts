@@ -114,3 +114,26 @@ export interface SiteData {
   freelance: Experience[];
   projects: Project[];
 }
+
+export type ShowcaseLane = "operations" | "hospitality" | "events" | "writing";
+export type ShowcaseKind = "case_study" | "testimonial" | "gallery";
+export type ShowcaseMedia = "image" | "video" | "embed";
+
+export interface ShowcaseItem {
+  id: string;
+  lane: ShowcaseLane;
+  kind: ShowcaseKind;
+  title: string | null;
+  client: string | null;
+  summary: string | null;
+  metric: string | null;
+  metric_label: string | null;
+  quote: string | null;
+  author: string | null;
+  author_role: string | null;
+  media_url: string | null;
+  media_type: ShowcaseMedia | null;
+  sort_order: number;
+  published: boolean;
+  created_at?: string;
+}

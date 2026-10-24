@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicSiteData } from "@/lib/data";
 import PrintButton from "@/components/PrintButton";
 
 export const revalidate = 0;
+export const metadata: Metadata = { title: "Resume: Madhura Padman" };
 
 export default async function ResumePage() {
   const supabase = createClient();
@@ -13,7 +15,7 @@ export default async function ResumePage() {
     (p) => p.featured && p.status === "published"
   );
 
-  const resumeExpRows = (
+  const rows = (
     list: { org: string; role: string; dates: string; responsibilities: string }[]
   ) =>
     list.map((e, i) => (
@@ -21,7 +23,7 @@ export default async function ResumePage() {
         <div className="r-exp-head">
           <div className="r-exp-left">
             <b>{e.org}</b>
-            <span>{e.role}</span>
+            <span className="r-role">{e.role}</span>
           </div>
           <span className="r-exp-dates">{e.dates}</span>
         </div>
@@ -30,97 +32,101 @@ export default async function ResumePage() {
     ));
 
   return (
-    <div>
+    <div className="page" style={{ paddingTop: 0 }}>
       <div className="resume-bar">
-        <Link href="/" className="resume-bar-btn">
-          ← Back to portfolio
+        <Link href="/portfolio" className="pill-btn">
+          &larr; Back to portfolio
+        </Link>
+        <Link href="/" className="brand">
+          {s.name || "Madhura Padman"}
         </Link>
         <PrintButton />
       </div>
-      <div className="resume-page">
-        <h1 className="r-name">{s.name}</h1>
-        <div className="r-tag">{s.tagline}</div>
-        <div className="r-role">{s.professionalTitle.toUpperCase()}</div>
-        <div className="r-contact">
-          {s.email} &nbsp;·&nbsp; {s.phone} &nbsp;·&nbsp; {s.location}
-        </div>
 
-        <div className="r-section">
-          <h4>Profile</h4>
-          <p className="r-profile">{data.about.paragraphs[0] || ""}</p>
-        </div>
-
-        <div className="r-section">
-          <h4>Core Capabilities</h4>
-          <div className="r-caps">
-            {data.capabilities.map((c, i) => (
-              <span className="r-cap-pill" key={i}>
-                {c.title}
-              </span>
-            ))}
+      <header className="r-head">
+        <div className="wrap">
+          <h1 className="r-name">{s.name}</h1>
+          {s.tagline && <p className="r-tag">{s.tagline}</p>}
+          <div className="r-contact">
+            {s.professionalTitle && <span>{s.professionalTitle}</span>}
+            {s.email && <a href={`mailto:${s.email}`}>{s.email}</a>}
+            {s.phone && <a href={`tel:${s.phone.replace(/\s/g, "")}`}>{s.phone}</a>}
+            {s.location && <span>{s.location}</span>}
           </div>
         </div>
+      </header>
 
-        <div className="r-section">
-          <h4>Experience</h4>
-          {resumeExpRows(data.experience)}
-        </div>
-
-        {data.freelance.length > 0 && (
-          <div className="r-section">
-            <h4>Freelance Work</h4>
-            {resumeExpRows(data.freelance)}
-          </div>
+      <div className="r-sheet">
+        {data.about.paragraphs[0] && (
+          <section className="r-section">
+            <h2>Profile</h2>
+            <p className="r-profile">{data.about.paragraphs[0]}</p>
+          </section>
         )}
 
-        <div className="r-section">
-          <h4>Selected Project Experience</h4>
-          {featuredProjects.map((p) => (
-            <div className="r-exp-item" key={p.id}>
-              <div className="r-exp-head">
-                <b>{p.title}</b>
-              </div>
-              <p>{p.output || p.short_desc || ""}</p>
+        {data.capabilities.length > 0 && (
+          <section className="r-section">
+            <h2>Core capabilities</h2>
+            <div className="r-caps">
+              {data.capabilities.map((c, i) => (
+                <span className="r-cap-pill" key={i}>
+                  {c.title}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
+          </section>
+        )}
+
+        <section className="r-section">
+          <h2>Experience</h2>
+          {rows(data.experience)}
+        </section>
+
+        {data.freelance.length > 0 && (
+          <section className="r-section">
+            <h2>Freelance work</h2>
+            {rows(data.freelance)}
+          </section>
+        )}
+
+        {featuredProjects.length > 0 && (
+          <section className="r-section">
+            <h2>Selected projects</h2>
+            {featuredProjects.map((p) => (
+              <div className="r-exp-item" key={p.id}>
+                <div className="r-exp-head">
+                  <b>{p.title}</b>
+                </div>
+                <p>{p.output || p.short_desc || ""}</p>
+              </div>
+            ))}
+          </section>
+        )}
 
         <div className="r-two-col">
-          <div className="r-section">
-            <h4>Education</h4>
+          <section className="r-section">
+            <h2>Education</h2>
             {data.education.map((e, i) => (
               <div className="r-edu-item" key={i}>
                 <b>{e.degree}</b>
                 <span>{e.institution}</span>
               </div>
             ))}
-          </div>
-          <div className="r-section">
-            <h4>Tools</h4>
+          </section>
+          <section className="r-section">
+            <h2>Tools</h2>
             <div className="r-tools">
               {data.tools.map((t, i) => (
-                <span key={i}>
-                  {t}
-                  {i < data.tools.length - 1 && <br />}
-                </span>
+                <span key={i}>{t}</span>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       </div>
-      <p
-        className="resume-print-hint"
-        style={{
-          textAlign: "center",
-          fontFamily: "var(--mono)",
-          fontSize: "11.5px",
-          color: "var(--muted)",
-          maxWidth: 400,
-          margin: "0 auto 40px",
-        }}
-      >
-        Tap &quot;Save as PDF&quot; above, then choose &quot;Save as PDF&quot;
-        or &quot;Print to PDF&quot; in the sheet that opens.
+
+      <p className="resume-print-hint">
+        Choose &quot;Save as PDF&quot; above, then pick &quot;Save as PDF&quot; as the printer in the window
+        that opens.
       </p>
     </div>
   );

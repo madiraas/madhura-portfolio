@@ -1,28 +1,30 @@
-import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Newsreader } from "next/font/google";
 import "./globals.css";
+import "./site.css";
 
-const fraunces = Fraunces({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-display",
+  display: "swap",
+});
+const body = Newsreader({
+  subsets: ["latin"],
   style: ["normal", "italic"],
-  axes: ["opsz"],
-});
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
-});
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-jetbrains",
+  variable: "--font-body",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Madhura Padman: I make messy projects move.",
   description:
-    "Operations, coordination & execution for founders and growing teams.",
+    "Operations, travel, events and writing. Madhura Padman takes projects that are all over the place and keeps them moving until they are done.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#D90F10",
 };
 
 export default function RootLayout({
@@ -32,21 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-        style={
-          {
-            // Map the generated font variables onto the design tokens
-            // the ported CSS expects, without touching every selector.
-            "--serif": "var(--font-fraunces), Georgia, serif",
-            "--sans":
-              "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
-            "--mono": "var(--font-jetbrains), monospace",
-          } as React.CSSProperties
-        }
-      >
-        {children}
-      </body>
+      <body className={`${display.variable} ${body.variable}`}>{children}</body>
     </html>
   );
 }

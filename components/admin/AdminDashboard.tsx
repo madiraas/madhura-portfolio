@@ -14,6 +14,7 @@ import ToolsPanel from "./ToolsPanel";
 import HowItWorkPanel from "./HowItWorkPanel";
 import ExperiencePanel from "./ExperiencePanel";
 import ProjectsPanel from "./ProjectsPanel";
+import ShowcasePanel from "./ShowcasePanel";
 
 const TABS = [
   "Settings",
@@ -22,6 +23,7 @@ const TABS = [
   "Experience",
   "Freelance",
   "Projects",
+  "Showcase",
   "Education",
   "Tools",
   "How I Work",
@@ -129,6 +131,7 @@ export default function AdminDashboard({
             toast={toast}
           />
         )}
+        {tab === "Showcase" && <ShowcasePanel toast={toast} />}
         {tab === "Projects" && (
           <ProjectsPanel
             projects={data.projects}

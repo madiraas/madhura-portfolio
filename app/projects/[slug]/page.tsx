@@ -42,20 +42,23 @@ export default async function ProjectDetailPage({
   const visibleLinks = (p.links || []).filter((l) => l.visibility !== "private");
 
   return (
-    <>
+    <div className="page">
       <Nav />
-      <main className="wrap proj-detail">
-        <Link href="/" className="back-link">
-          ← Back to portfolio
-        </Link>
-        {p.status === "coming-soon" && (
-          <span className="badge-soon">Coming soon</span>
-        )}
-        <h1 className="pd-title">{p.title}</h1>
-        <div className="pd-org">
-          {p.org} · {p.category}
-          {p.date ? ` · ${p.date}` : ""}
+      <header className="page-head">
+        <div className="wrap">
+          <Link href="/portfolio#work" className="back-link">
+            &larr; Back to case studies
+          </Link>
+          {p.status === "coming-soon" && (
+            <div>
+              <span className="badge">Coming soon</span>
+            </div>
+          )}
+          <h1>{p.title}</h1>
+          <div className="pd-meta">{[p.org, p.category, p.date].filter(Boolean).join(", ")}</div>
         </div>
+      </header>
+      <main className="wrap pd-wrap">
         <div className="pd-grid">
           <div>
             {p.situation && (
@@ -110,7 +113,7 @@ export default async function ProjectDetailPage({
             {visibleLinks.map((l, i) => (
               <a
                 key={i}
-                className="pd-link-btn"
+                className="pill-btn solid"
                 href={l.url}
                 target="_blank"
                 rel="noopener"
@@ -126,7 +129,7 @@ export default async function ProjectDetailPage({
             {documents.map((d) => (
               <a
                 key={d.id}
-                className="pd-link-btn"
+                className="pill-btn"
                 href={d.url}
                 target="_blank"
                 rel="noopener"
@@ -149,7 +152,7 @@ export default async function ProjectDetailPage({
 
         {p.skills.length > 0 && (
           <div className="pd-field">
-            <span className="k">Skills Demonstrated</span>
+            <span className="k">Skills shown</span>
             <div className="pd-skills">
               {p.skills.map((sk, i) => (
                 <span key={i}>{sk}</span>
@@ -158,6 +161,6 @@ export default async function ProjectDetailPage({
           </div>
         )}
       </main>
-    </>
+    </div>
   );
 }

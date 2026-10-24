@@ -1,66 +1,60 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const LINKS = [
-  { id: "about", label: "About" },
-  { id: "capabilities", label: "What I do" },
-  { id: "experience", label: "Experience" },
-  { id: "freelance", label: "Freelance" },
-  { id: "work", label: "Work" },
-  { id: "how", label: "Process" },
-  { id: "contact", label: "Contact" },
+  { href: "/", label: "The ride" },
+  { href: "/portfolio", label: "Portfolio" },
+  { href: "/portfolio#work", label: "Case studies" },
+  { href: "/portfolio#contact", label: "Contact" },
 ];
 
+/** Top bar for every page except the landing page (which has its own). */
 export default function Nav({ name = "Madhura Padman" }: { name?: string }) {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const isHome = pathname === "/";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  function goToSection(id: string) {
-    setOpen(false);
-    if (isHome) {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      router.push(`/#${id}`);
-    }
-  }
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <nav className={`nav${scrolled ? " scrolled" : ""}`}>
-      <div className="nav-inner">
-        <Link href="/" className="nav-name" style={{ textDecoration: "none" }}>
+    <header className={`site-nav${scrolled ? " scrolled" : ""}${open ? " open" : ""}`}>
+      <div className="site-nav-in">
+        <Link href="/" className="brand">
           {name}
         </Link>
-        <ul className={`nav-links${open ? " open" : ""}`}>
+        <nav className="site-links" aria-label="Main">
           {LINKS.map((l) => (
-            <li key={l.id}>
-              <a onClick={() => goToSection(l.id)}>{l.label}</a>
-            </li>
+            <Link
+              key={l.label}
+              href={l.href}
+              aria-current={l.href === pathname ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {l.label}
+            </Link>
           ))}
-        </ul>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <Link href="/resume" className="nav-cta">
+          <Link href="/resume" className="pill-btn solid" onClick={() => setOpen(false)}>
             Resume
           </Link>
-          <button
-            className="nav-mobile-toggle"
-            onClick={() => setOpen((o) => !o)}
-          >
-            Menu
-          </button>
-        </div>
+        </nav>
+        <button
+          className="menu-btn"
+          aria-expanded={open}
+          aria-label="Menu"
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? "Close" : "Menu"}
+        </button>
       </div>
-    </nav>
+    </header>
   );
 }
