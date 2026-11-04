@@ -6,11 +6,30 @@ import { useEffect, useRef, useState } from "react";
 import CatGate from "./CatGate";
 import Petals from "./Petals";
 import Portrait from "./Portrait";
-import { LANES, CONTACT, type Lane } from "@/lib/lanes";
+import type { Lane } from "@/lib/lanes";
+import type { LandingContent } from "@/lib/landing";
+import { makeT } from "@/lib/sitecopy";
+import type { VideoItem } from "@/lib/videos";
+import WatchIntro from "./WatchIntro";
 
 type Gate = "pending" | "show" | "gone";
 
-export default function Landing({ name }: { name: string }) {
+export default function Landing({
+  name,
+  content,
+  lanes,
+  copy,
+  contact,
+  intro,
+}: {
+  name: string;
+  content: LandingContent;
+  lanes: Lane[];
+  copy: Record<string, string>;
+  contact: { email: string; whatsapp: string };
+  intro: VideoItem | null;
+}) {
+  const t = makeT(copy);
   const [gate, setGate] = useState<Gate>("pending");
   const [riding, setRiding] = useState<string | null>(null);
   const [wipe, setWipe] = useState<{ tint: string; x: number; y: number } | null>(null);
@@ -58,10 +77,10 @@ export default function Landing({ name }: { name: string }) {
             {name}
           </Link>
           <nav aria-label="Main">
-            <Link href="/portfolio">Portfolio</Link>
-            <Link href="/portfolio#contact">Contact</Link>
+            <Link href="/portfolio">{t("nav.portfolio")}</Link>
+            <Link href="/portfolio#contact">{t("nav.contact")}</Link>
             <Link href="/resume" className="pill-btn cream">
-              Resume
+              {t("nav.resume")}
             </Link>
           </nav>
         </div>
@@ -71,29 +90,30 @@ export default function Landing({ name }: { name: string }) {
             <Portrait />
             <div className="hero-copy">
               <h1>
-                Hello!
-                <br />
-                Welcome to my career rollercoaster.
+                {content.heading.split("\n").map((line, i) => (
+                  <span key={i}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
               </h1>
-              <p className="hero-sub">
-                I&apos;m Madhura. I take the messy middle of a project and keep it moving, across
-                operations, travel, events and writing. Pick a tunnel below and I&apos;ll take you in.
-              </p>
+              <p className="hero-sub">{content.subtext}</p>
               <div className="hero-links">
                 <Link href="/resume" className="pill-btn cream big">
-                  View my resume
+                  {content.resumeLabel}
                 </Link>
                 <Link href="/portfolio" className="pill-btn line big">
-                  See the full portfolio
+                  {content.portfolioLabel}
                 </Link>
+                {intro && <WatchIntro item={intro} label={t("home.watch")} />}
               </div>
             </div>
           </div>
         </div>
 
         <div className="ground">
-          <div className={`tunnels${riding ? " busy" : ""}`}>
-            {LANES.map((l) => (
+          <div className={`tunnels${riding ? " busy" : ""}`} style={{ ["--n" as string]: lanes.length }}>
+            {lanes.map((l) => (
               <Tunnel key={l.id} lane={l} state={riding === l.id ? "go" : riding ? "dim" : ""} onRide={ride} />
             ))}
           </div>
@@ -103,15 +123,14 @@ export default function Landing({ name }: { name: string }) {
       <section className="strip">
         <div className="wrap strip-in">
           <p>
-            <strong>Open to freelance projects.</strong> Tell me what needs running and I&apos;ll
-            tell you how I&apos;d do it.
+            <strong>{content.stripTitle}</strong> {content.stripText}
           </p>
           <div className="strip-links">
-            <a className="pill-btn solid" href={CONTACT.whatsapp}>
-              WhatsApp me
+            <a className="pill-btn solid" href={contact.whatsapp}>
+              {t("home.stripWhatsapp")}
             </a>
-            <a className="pill-btn" href={`mailto:${CONTACT.email}`}>
-              Email
+            <a className="pill-btn" href={`mailto:${contact.email}`}>
+              {t("home.stripEmail")}
             </a>
           </div>
         </div>
